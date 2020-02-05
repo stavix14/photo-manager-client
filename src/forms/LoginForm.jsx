@@ -9,10 +9,11 @@ const LoginForm = props => {
     return (
         <Form loading={loading}>
             {errors.global && (
-                <Message negative>
-                    <Message.Header>Something went wrong</Message.Header>
-                    <p>{errors.global}</p>
-                </Message>
+                <Message 
+                    negative
+                    header="Something went wrong"
+                    content={errors.global}
+                />
             )}
             <Form.Field error={!!errors.email}>
                 <label htmlFor="email">Email</label>

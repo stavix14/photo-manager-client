@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
-import LoginForm from "../form/LoginForm";
+import LoginForm from "../forms/LoginForm";
 import api from "../api";
 
 class LoginPage extends React.Component {
@@ -21,13 +21,11 @@ class LoginPage extends React.Component {
     
     onSubmit = async (credentials, path, registration) => {
         const errors = this.validate(credentials);
-        let response;
 
         this.setState({ errors });
-
         if (Object.keys(errors).length === 0) {
             this.setState({ loading: true });
-            response = await this.submit(this.state.data, path);
+            const response = await this.submitFormData(this.state.data, path);  //make response const because it s not needed outside of the block scope
 
             if (Object.keys(this.state.errors).length === 0) {
                 this.props.history.push({
@@ -41,7 +39,7 @@ class LoginPage extends React.Component {
         }
     }
 
-    submit = async (credentials, path) => {
+    submitFormData = async (credentials, path) => {
         try {
             return await api.auth(credentials, path);
             }
