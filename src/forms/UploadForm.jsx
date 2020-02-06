@@ -72,6 +72,7 @@ const UploadForm = ({ formValues, errors, loading, submitSuccess, onChange, addT
             />
             <Button
                 type="submit"
+                positive
                 content="Submit"
                 labelPosition="left"
                 icon="send"

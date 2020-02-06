@@ -15,7 +15,7 @@ export default {
     },
     getImages: async () => {
         const response = await axios.get('/api/images');
-        return response.data.imagePosts;
+        return response.data;
     },
     postComment: async postComment => {
         const response = await axios.post('/api/images/comment', { postComment });

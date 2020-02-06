@@ -4,55 +4,56 @@ import { Card, Comment, Header, Icon, Image, Rating } from 'semantic-ui-react';
 import Chip from "../miscellaneous/Chip";
 import CommentDisplay from "../comments/CommentDisplay";
 import CommentInput from "../comments/CommentInput";
-import { ratingCalculation } from "../utils/utils";
+import ratingCalculation from "../utils/utils";
 
-const CardDisplay = props => (
+const CardDisplay = ({ id, data, inputData, errors, onSubmit, onChange, onRate }) => (
   <Card centered>
     {/* put the link in a env file */}
-    <Image src={`http://localhost:8080/uploads/${props.imageName}`} wrapped ui={false} />
+    <Image src={`http://localhost:8080/uploads/${data.imageName}`} wrapped ui={false} />
     <Card.Content extra>
       <span>
         <Icon name='point' />
-        {props.location}
+        {data.location}
       </span>
-      <Rating rating={props.ratings.length ? ratingCalculation(props.ratings) : 0} maxRating={5} disabled />
+      <Rating rating={data.rating.length ? ratingCalculation(data.rating) : 0} maxRating={5} disabled />
     </Card.Content>
     <Card.Content>
-      <Card.Header>{props.username}</Card.Header>
+      <Card.Header>{data.username}</Card.Header>
       <Card.Meta>
-        <span className='date'>{props.date}</span>
+        <span className='date'>{data.date}</span>
       </Card.Meta>
       <Card.Description>
-        {props.description}
+        {data.description}
       </Card.Description>
     </Card.Content>
     <Card.Content extra>
-        {props.tags.map((tag, index) => <Chip key={index} tag={tag} /> )}
+        {data.tags.map((tag, index) => <Chip key={index} tag={tag} /> )}
     </Card.Content>
     <Comment.Group>
         <Header as='h3' dividing>
             Comments
         </Header>
-        {props.comments.map((commentPost, index) => <CommentDisplay key={index} username={commentPost[0]} comment={commentPost[1]} />)}
+        {data.comments.map((commentPost, index) => <CommentDisplay key={index} username={commentPost[0]} comment={commentPost[1]} />)}
     <CommentInput
-        id={props.id} 
-        onChange={props.onChange} 
-        onRate={props.onRate} 
-        onSubmit={props.onSubmit}
-        inputData={props.inputData}
-        errors={props.errors}
+        id={id} 
+        onChange={onChange} 
+        onRate={onRate} 
+        onSubmit={onSubmit}
+        inputData={inputData}
+        errors={errors}
     />
     </Comment.Group>
   </Card>
 )
 
 CardDisplay.propTypes = {
-  location: PropTypes.string.isRequired,
-  date: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
-  tags: PropTypes.array.isRequired,
-  username: PropTypes.string.isRequired,
-  imageName: PropTypes.string.isRequired
+  id: PropTypes.string.isRequired,
+  data: PropTypes.object.isRequired,
+  inputData: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onRate: PropTypes.func.isRequired
 }
 
 export default CardDisplay;
