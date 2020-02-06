@@ -1,12 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Form, Message } from 'semantic-ui-react';
-import InlineError from "../messages/InlineError";
 
-const LoginForm = props => {
-    const { email, password, errors, loading, onChange } = props;
-
-    return (
+const LoginForm = ({ email, password, errors, loading, registrationSucceded, onChange }) => (
         <Form loading={loading}>
             {errors.global && (
                 <Message 
@@ -15,39 +11,42 @@ const LoginForm = props => {
                     content={errors.global}
                 />
             )}
-            <Form.Field error={!!errors.email}>
-                <label htmlFor="email">Email</label>
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="example@example.com"
-                    value={email}
-                    onChange={onChange}
+            {registrationSucceded && (
+                <Message
+                    positive
+                    header="You have successfully registered!"
+                    content="Log in to start enjoying our app!"
                 />
-                {errors.email && <InlineError text={errors.email} />}
-            </Form.Field>
-            <Form.Field error={!!errors.password}>
-                <label htmlFor="password">Password</label>
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="Here comes your password..."
-                    value={password}
-                    onChange={onChange}
-                />
-                {errors.password && <InlineError text={errors.password} />}
-            </Form.Field>
+            )}
+            <Form.Input 
+                type="email"
+                name="email"
+                label="Email"
+                placeholder="example@example.com"
+                error={errors.email}
+                value={email}
+                onChange={onChange}
+                required
+            />
+            <Form.Input 
+                type="password"
+                name="password"
+                label="Password"
+                placeholder="Here comes your password"
+                error={errors.password}
+                value={password}
+                onChange={onChange}
+                required
+            />
         </Form>
     );
-};
 
 LoginForm.propTypes = {
     email: PropTypes.string.isRequired,
     password: PropTypes.string.isRequired,
     errors: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
+    registrationSucceded: PropTypes.bool.isRequired,
     onChange: PropTypes.func.isRequired
 }
 

@@ -11,7 +11,8 @@ class LoginPage extends React.Component {
             password: ''
         },
         loading: false,
-        errors: {}
+        errors: {},
+        registrationSucceded: false, 
     };
 
     onChange = e =>
@@ -19,22 +20,27 @@ class LoginPage extends React.Component {
             data: { ...this.state.data, [e.target.name]: e.target.value }
         });
     
-    onSubmit = async (credentials, path, registration) => {
+    onSubmit = async (credentials, path) => {
         const errors = this.validate(credentials);
 
         this.setState({ errors });
+
         if (Object.keys(errors).length === 0) {
             this.setState({ loading: true });
-            const response = await this.submitFormData(this.state.data, path);  //make response const because it s not needed outside of the block scope
+            const response = await this.submitFormData(this.state.data, path);
 
-            if (Object.keys(this.state.errors).length === 0) {
-                this.props.history.push({
-                    pathname: "/feed",
-                    state: {
-                        username: response.user.email,
-                        registration
-                    }
-                });
+            if (response) {
+                if (response.registrationSucceded) {
+                    this.setState({ registrationSucceded: true, loading: false });
+                }
+                else {
+                    this.props.history.push({
+                        pathname: "/feed",
+                        state: {
+                            username: response.user.email,
+                        }
+                    });
+                }
             }
         }
     }
@@ -63,7 +69,7 @@ class LoginPage extends React.Component {
     }
 
     render() {
-        const { data, errors, loading } = this.state;
+        const { data, errors, loading, registrationSucceded } = this.state;
         const path = ["auth", "register"];
 
         return (
@@ -73,11 +79,16 @@ class LoginPage extends React.Component {
                     password={data.password}
                     errors={errors}
                     loading={loading}
+                    registrationSucceded={registrationSucceded}
                     onChange={this.onChange}
                 />
-                <Button onClick={() => this.onSubmit(data, path[0], false)} color="instagram">Sign In</Button>
-                <span>OR</span>
-                <Button onClick={() => this.onSubmit(data, path[1], true)}>Sign Up</Button>
+                <div style={{ textAlign: "center", marginTop: "2em"}}>
+                    <Button.Group>
+                        <Button onClick={() => this.onSubmit(data, path[0])} color="instagram"  labelPosition="left" content="Sign In" icon="sign in" />
+                        <Button.Or />
+                        <Button onClick={() => this.onSubmit(data, path[1])} positive labelPosition="right" content="Sign Up" icon="angle double up" />
+                    </Button.Group>
+                </div>
             </React.Fragment>
         );
     }

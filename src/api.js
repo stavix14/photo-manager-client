@@ -4,6 +4,10 @@ export default {
     auth: async (credentials, path) => {
         const response = await axios.post(`/api/user/${path}`, { credentials });
         console.log(response);
+        if (response.data.user) {
+            sessionStorage.username = response.data.user.email;
+            sessionStorage.token = response.data.user.token;
+        }
         return response.data;
     },
     imageForm: async formData => {
