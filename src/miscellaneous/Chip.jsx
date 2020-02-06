@@ -1,15 +1,16 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { Icon }from 'semantic-ui-react';
 
-const Chip = ({ tags }) => 
-        <div className="tags-input">
-            <ul>
-                {tags.map((tag, index) => (
-                    <li key={index}>
-                        <span>{tag}</span>
-                        {/* <i className="material-icons">close</i> */}
-                    </li>
-                ))}
-            </ul>
-        </div>
+const Chip = ({ tag }) => (
+    <span>
+        <Icon name='tag' />
+        {tag}
+    </span>
+);
+        
+Chip.propTypes = {
+    tag: PropTypes.string.isRequired
+}
 
 export default Chip;
