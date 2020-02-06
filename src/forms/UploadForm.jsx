@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Form, Message, Button } from 'semantic-ui-react';
 
-const UploadForm = props => {
-    const { formValues, errors, loading, onChange, addTags, onImageSelect, onSubmit } = props;
+const UploadForm = ({ formValues, errors, loading, submitSuccess, onChange, addTags, onImageSelect, onSubmit }) => {
     const { location, date, description } = formValues;
 
     return(
@@ -13,6 +12,13 @@ const UploadForm = props => {
                     negative
                     header="Something went wrong"
                     content={errors.global}
+                />
+            )}
+            {submitSuccess && (
+                <Message
+                    positive
+                    header="Your photo was posted!"
+                    content="Go to feed page to check it out along all our library."
                 />
             )}
             <Form.Input 
@@ -64,7 +70,13 @@ const UploadForm = props => {
                 onChange={onImageSelect}
                 required
             />
-            <Button type='submit' onClick={onSubmit}>Submit</Button>
+            <Button
+                type="submit"
+                content="Submit"
+                labelPosition="left"
+                icon="send"
+                onClick={onSubmit}
+            />
         </Form>
     );
 }
@@ -73,6 +85,7 @@ UploadForm.propTypes = {
     formValues: PropTypes.object.isRequired,
     errors: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
+    submitSuccess: PropTypes.bool.isRequired,
     onChange: PropTypes.func.isRequired,
     addTags: PropTypes.func.isRequired,
     onImageSelect: PropTypes.func.isRequired,

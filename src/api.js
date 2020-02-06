@@ -3,10 +3,9 @@ import axios from "axios";
 export default {
     auth: async (credentials, path) => {
         const response = await axios.post(`/api/user/${path}`, { credentials });
-        console.log(response);
         if (response.data.user) {
-            sessionStorage.username = response.data.user.email;
-            sessionStorage.token = response.data.user.token;
+            sessionStorage.setItem("username", response.data.user.email);
+            sessionStorage.setItem("token", response.data.user.token);
         }
         return response.data;
     },
@@ -20,7 +19,6 @@ export default {
     },
     postComment: async postComment => {
         const response = await axios.post('/api/images/comment', { postComment });
-        console.log(response.data);
         return response.data;
     }
 };

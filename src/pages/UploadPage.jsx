@@ -1,9 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Button } from 'semantic-ui-react';
 import UploadForm from '../forms/UploadForm';
 import Chip from '../miscellaneous/Chip';
+import ErrorPage from "./ErrorPage";
 import { validateDate, validateImage } from "../utils/validate";
 import api from "../api";
 
@@ -18,7 +18,8 @@ class UploadPage extends React.Component {
             selectedImage: null
         },
         loading: false,
-        errors: {}
+        errors: {},
+        submitSuccess: false,
     };
 
     onChange = e =>
@@ -34,7 +35,7 @@ class UploadPage extends React.Component {
         });
 
     onSubmit = async data => {
-        const { username } = this.props.location.state;
+        const username = sessionStorage.getItem("username");
         const errors = this.validate(data);
         let formData = new FormData();
 
@@ -44,20 +45,15 @@ class UploadPage extends React.Component {
                 if (key === "selectedImage") {
                     formData.append("imageName", "pm-image-" + Date.now());
                 }
-                return formData.append(key, data[key]); //check if works
+                return formData.append(key, data[key]);
             });
             formData.append("username", username);
             this.setState({ loading: true });
 
             const response = await this.submitFormData(formData);
-
-            if (Object.keys(this.state.errors).length === 0) {
-                this.setState({ loading: false });
-
-                //Do confirmation message that everything was fine
-                //after submit make a button to redirect to feed page
+            if (response) {
+                this.setState({ submitSuccess: true, loading: false });
             }
-
         }
     }
 
@@ -110,21 +106,21 @@ class UploadPage extends React.Component {
     }
 
     render() {
-        const { data, errors, loading } = this.state;
+        const { data, errors, loading, submitSuccess } = this.state;
 
+        if (!sessionStorage.token) {
+            return <ErrorPage />
+        }
         return (
             <React.Fragment>
                 <Button
                     primary
                     as={Link} 
-                    to={{pathname: '/feed',
-                        state: {
-                            username: this.props.location.state.username
-                        }
-                    }}
-                >
-                    Go to Feed
-                </Button>
+                    to='/feed'
+                    content="Go to Feed"
+                    labelPosition="left"
+                    icon="reply"
+                />
                 <UploadForm
                     formValues={data}
                     errors={errors}
@@ -132,19 +128,14 @@ class UploadPage extends React.Component {
                     onChange={this.onChange}
                     addTags={this.addTags}
                     onImageSelect={this.onImageSelect}
-                    onSubmit={() => this.onSubmit(data)} //after submit make a button to redirect to feed page
+                    onSubmit={() => this.onSubmit(data)}
+                    submitSuccess={submitSuccess}
 
                 />
                 {data.tags.map((tag, index) => <Chip key={index} tag={tag} /> )}
             </React.Fragment>
         );
     }
-}
-
-UploadPage.propTypes = {
-    history: PropTypes.shape({
-        push: PropTypes.func.isRequired
-    }).isRequired
 };
 
 export default UploadPage;
