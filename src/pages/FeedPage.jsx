@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Header, Message } from 'semantic-ui-react'
+import { Button, Dropdown, Header, Message } from 'semantic-ui-react'
 import CardDisplay from "../cards/CardDisplay";
 import ErrorPage from "../pages/ErrorPage";
 import api from "../api";
+import { sortAscending } from "../utils/utils";
 
 class FeedPage extends React.Component {
     state = {
@@ -67,6 +68,18 @@ class FeedPage extends React.Component {
         
     }
 
+    onSort = (e, { value }) => {
+        let sortedPosts;
+
+        if (value) {
+            sortedPosts = this.state.imagePosts.slice().sort((a, b) => sortAscending(a, b, "date"));
+        }
+        else {
+            sortedPosts = this.state.imagePosts.slice().sort((a, b) => sortAscending(a, b, "location"));
+        }
+        this.setState({ imagePosts: sortedPosts });
+    }
+
     submitFormData = async postComment => {
         try {
             return await api.postComment(postComment);
@@ -88,6 +101,18 @@ class FeedPage extends React.Component {
 
     render() {
         const { data, imagePosts, errors } = this.state;
+        const sortOptions = [
+            {
+                key: "location",
+                text: "By Location",
+                value: 0
+            },
+            {
+                key: "date",
+                text: "By Date",
+                value: 1
+            }
+        ];
 
         if (!sessionStorage.token) {
             return <ErrorPage />
@@ -123,6 +148,17 @@ class FeedPage extends React.Component {
                     content="Upload a picture"
                     labelPosition="left"
                     icon="reply"
+                    floated='right'
+                />
+                <Dropdown
+                    text='Filter Posts'
+                    icon='filter'
+                    floating
+                    labeled
+                    button
+                    options={sortOptions}
+                    onChange={this.onSort}
+                    className='icon'
                 />
                     {imagePosts.map(post => 
                         <CardDisplay

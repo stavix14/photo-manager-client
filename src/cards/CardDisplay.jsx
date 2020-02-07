@@ -4,7 +4,7 @@ import { Card, Comment, Header, Icon, Image, Rating } from 'semantic-ui-react';
 import Chip from "../miscellaneous/Chip";
 import CommentDisplay from "../comments/CommentDisplay";
 import CommentInput from "../comments/CommentInput";
-import ratingCalculation from "../utils/utils";
+import { ratingCalculation } from "../utils/utils";
 
 const CardDisplay = ({ id, data, inputData, errors, onSubmit, onChange, onRate }) => (
   <Card centered>

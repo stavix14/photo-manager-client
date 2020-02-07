@@ -10,7 +10,6 @@ export const validateDate = userDate => {
     day = day < 10 ? `0${day.toString()}` : day.toString();
 
     const maxDate = `${year}-${month}-${day}`;
-    console.log(maxDate);
     
     if (!isDate.test(userDate)) {
         return "Date is invalid!";
