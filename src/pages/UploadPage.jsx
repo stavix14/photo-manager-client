@@ -52,7 +52,8 @@ class UploadPage extends React.Component {
 
             const response = await this.submitFormData(formData);
             if (response) {
-                this.setState({ submitSuccess: true, loading: false });
+                this.setState({ submitSuccess: true, loading: false,
+                data: {location: '', date: '', description: '', tags: [], selectedImage: null} });
             }
         }
     }

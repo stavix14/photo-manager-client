@@ -45,7 +45,6 @@ class FeedPage extends React.Component {
         });
     }
 
-    // validate data
     onSubmit = async (data, id) => {
         const errors = this.validate(data.comment);
 
@@ -72,7 +71,7 @@ class FeedPage extends React.Component {
         let sortedPosts;
 
         if (value) {
-            sortedPosts = this.state.imagePosts.slice().sort((a, b) => sortAscending(a, b, "date"));
+            sortedPosts = this.state.imagePosts.slice().sort((a, b) => sortAscending(a, b, "date")).reverse();
         }
         else {
             sortedPosts = this.state.imagePosts.slice().sort((a, b) => sortAscending(a, b, "location"));
