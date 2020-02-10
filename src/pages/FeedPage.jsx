@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Dropdown, Header, Message } from 'semantic-ui-react'
+import { Button, Dropdown, Header, Loader, Message } from 'semantic-ui-react'
 import CardDisplay from "../cards/CardDisplay";
 import ErrorPage from "../pages/ErrorPage";
 import api from "../api";
@@ -8,60 +8,60 @@ import { sortAscending } from "../utils/utils";
 
 class FeedPage extends React.Component {
     state = {
-        data: {
-            comment: '',
-            rating: 0
-        },
+        data: [],
         imagePosts : [],
-        errors: {}
+        errors: {},
+        loading: false
     };
 
-    async componentDidMount() {
-        const username = sessionStorage.getItem("username");
-    
-        if (username) {
-            try {
-                const response = await api.getImages();
-                this.setState({ imagePosts: response.imagePosts });
-            }
-            catch(err) {
-                this.setState({ errors: err.response.data.errors })
-            }
+    async componentDidMount() {    
+        try {
+            this.setState({ loading: true});
+            const response = await api.getImages();
+            this.setState({ imagePosts: response.imagePosts });
+            this.addInputState(response.imagePosts);
+            this.setState({ loading: false});
+        }
+        catch(err) {
+            this.setState({ errors: err.response.data.errors, loading: false });
         }
     };
 
-    onChange = e => {
-        this.setState({
-            data: {...this.state.data, [e.target.name]: e.target.value}
-        })
+    onChange = (e, index) => {
+        let data = this.state.data;
+        data[index] = {...this.state.data[index], [e.target.name]: e.target.value};
+        this.setState({ data });
     }
 
     // first parameter is no use here, but the second one is required
-    onRate = (e, data) => {
-        const { rating } = data;
-
-        this.setState({
-            data: {...this.state.data, rating }
-        });
+    onRate = (e, { rating }, index ) => {
+        let { data } = this.state;
+        data[index] = {...this.state.data[index], rating};
+        this.setState({ data });
     }
 
     onSubmit = async (data, id) => {
         const errors = this.validate(data.comment);
-
         this.setState({ errors: {...errors, id} });
-        if(Object.keys(errors).length === 0) {
+        
+        if (Object.keys(errors).length === 0) {
             const username = sessionStorage.getItem("username");
             const postComment = {...data, id, username};
-            try {
-                await this.submitFormData(postComment);
 
-                const response = await api.getImages();
-                this.setState({ imagePosts: response.imagePosts,
-                    data: {comment: "", rating: 0}
+            try {
+                const response = await api.postComment(postComment);
+                const { imagePosts } = this.state;
+
+                imagePosts.forEach(post => {
+                    if (post._id === response.id) { 
+                        post.comments = [...post.comments, response.newComment];
+                        post.rating = [...post.rating, response.newRating];
+                    }
                 });
+                this.setState({ imagePosts });
             }
             catch (err) {
-                console.error(err); //have to rethink this whole try and catch with the one below
+                this.setState({ errors: err.response.data.errors })
             }
         }
         
@@ -79,12 +79,13 @@ class FeedPage extends React.Component {
         this.setState({ imagePosts: sortedPosts });
     }
 
-    submitFormData = async postComment => {
-        try {
-            return await api.postComment(postComment);
-            }
-        catch (err) {
-            this.setState({ errors: err.response.data.errors })
+    addInputState = imagePosts => {
+        if (imagePosts.length > 0) {
+            imagePosts.forEach(() => {
+                this.setState(prevState => ({ 
+                    data: [...prevState.data, {comment: '', rating: 0}]
+                }));
+            })
         }
     }
 
@@ -99,7 +100,7 @@ class FeedPage extends React.Component {
     }
 
     render() {
-        const { data, imagePosts, errors } = this.state;
+        const { data, imagePosts, errors, loading } = this.state;
         const sortOptions = [
             {
                 key: "location",
@@ -123,6 +124,9 @@ class FeedPage extends React.Component {
                 content={errors.global}
             />);
         }
+        if (loading) {
+            return <Loader active />
+        }
         if (!imagePosts.length) {
             return (
                 <React.Fragment>
@@ -139,7 +143,7 @@ class FeedPage extends React.Component {
             )
         }
         return(
-            <div>
+            <React.Fragment>
                 <Button 
                     primary
                     as={Link}
@@ -159,19 +163,19 @@ class FeedPage extends React.Component {
                     onChange={this.onSort}
                     className='icon'
                 />
-                    {imagePosts.map(post => 
-                        <CardDisplay
+                    {imagePosts.map((post, index) => {
+                        return (<CardDisplay
                             key={post._id} 
                             id={post._id}
                             data={post}
-                            inputData={data}
+                            inputData={data[index]}
                             errors={errors}
-                            onSubmit={() => this.onSubmit(data, post._id)}
-                            onChange={this.onChange}
-                            onRate={this.onRate}
-                        />
+                            onSubmit={() => this.onSubmit(data[index], post._id)}
+                            onChange={e => this.onChange(e, index)}
+                            onRate={(e, data) => this.onRate(e, data, index)}
+                        />)}
                     )}
-            </div>
+            </React.Fragment>
         );
     };
 }

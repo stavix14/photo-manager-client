@@ -18,7 +18,7 @@ export default {
         return response.data;
     },
     postComment: async postComment => {
-        const response = await axios.post('/api/images/comment', { postComment });
+        const response = await axios.put('/api/images/comment', { postComment });
         return response.data;
     }
 };
