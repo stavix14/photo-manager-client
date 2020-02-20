@@ -27,30 +27,15 @@ class LoginPage extends React.Component {
 
         if (Object.keys(errors).length === 0) {
             this.setState({ loading: true });
-            const response = await this.submitFormData(this.state.data, path);
-
-            if (response) {
-                if (response.registrationSucceded) {
-                    this.setState({ registrationSucceded: true, loading: false });
-                }
-                else {
-                    this.props.history.push({
-                        pathname: "/feed",
-                        state: {
-                            username: response.user.email,
-                        }
-                    });
-                }
+            try {
+                const response = await api.auth(credentials, path);
+                response.registrationSucceded
+                    ? this.setState({ registrationSucceded: true, loading: false })
+                    : this.props.history.push({ pathname: "/feed"});
             }
-        }
-    }
-
-    submitFormData = async (credentials, path) => {
-        try {
-            return await api.auth(credentials, path);
+            catch (error) {
+                this.setState({ errors: error.response.data.errors, loading: false })
             }
-        catch (err) {
-            this.setState({ errors: err.response.data.errors, loading: false })
         }
     }
 
@@ -84,7 +69,7 @@ class LoginPage extends React.Component {
                 />
                 <div style={{ textAlign: "center", marginTop: "2em"}}>
                     <Button.Group>
-                        <Button onClick={() => this.onSubmit(data, path[0])} color="instagram"  labelPosition="left" content="Sign In" icon="sign in" />
+                        <Button onClick={() => this.onSubmit(data, path[0])} color="instagram" labelPosition="left" content="Sign In" icon="sign in" />
                         <Button.Or />
                         <Button onClick={() => this.onSubmit(data, path[1])} positive labelPosition="right" content="Sign Up" icon="angle double up" />
                     </Button.Group>

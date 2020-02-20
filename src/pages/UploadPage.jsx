@@ -45,25 +45,19 @@ class UploadPage extends React.Component {
                 if (key === "selectedImage") {
                     formData.append("imageName", "pm-image-" + Date.now());
                 }
-                return formData.append(key, data[key]);
+                formData.append(key, data[key]);
             });
             formData.append("username", username);
             this.setState({ loading: true });
 
-            const response = await this.submitFormData(formData);
-            if (response) {
+            try {
+                await api.imageForm(formData);
                 this.setState({ submitSuccess: true, loading: false,
-                data: {location: '', date: '', description: '', tags: [], selectedImage: null} });
+                    data: {location: '', date: '', description: '', tags: [], selectedImage: null} });
             }
-        }
-    }
-
-    submitFormData = async formData => {
-        try {
-            return await api.imageForm(formData);
+            catch (error) {
+                this.setState({ errors: error.response.data.errors, loading: false });
             }
-        catch (err) {
-            this.setState({ errors: err.response.data.errors, loading: false })
         }
     }
 
