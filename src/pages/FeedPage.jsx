@@ -1,6 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button, Dropdown, Header, Loader, Message } from 'semantic-ui-react'
+import React from "react";
+import { Link } from "react-router-dom";
+import { Button, Dropdown, Header, Loader, Message } from "semantic-ui-react";
 import CardDisplay from "../cards/CardDisplay";
 import ErrorPage from "../pages/ErrorPage";
 import api from "../api";
@@ -8,12 +8,12 @@ import { sortAscending } from "../utils/utils";
 import "./FeedPage.css";
 
 class FeedPage extends React.Component {
-    state = {
-        data: [],
-        imagePosts : [],
-        errors: {},
-        loading: false
-    };
+  state = {
+    data: [],
+    imagePosts: [],
+    errors: {},
+    loading: false
+  };
 
     async componentDidMount() {    
         try {
@@ -29,77 +29,73 @@ class FeedPage extends React.Component {
         }
     };
 
-    onChange = (e, index) => {
-        let data = this.state.data;
-        data[index] = {...this.state.data[index], [e.target.name]: e.target.value};
-        this.setState({ data });
+  // first parameter is no use here, but the second one is required
+  onRate = (e, { rating }, index) => {
+    let { data } = this.state;
+    data[index] = { ...this.state.data[index], rating };
+    this.setState({ data });
+  };
+
+  onSubmit = async (data, id) => {
+    const errors = this.validate(data.comment);
+    this.setState({ errors: { ...errors, id } });
+
+    if (Object.keys(errors).length === 0) {
+      const username = sessionStorage.getItem("username");
+      const postComment = { ...data, id, username };
+
+      try {
+        const response = await api.postComment(postComment);
+        const { imagePosts } = this.state;
+
+        imagePosts.forEach(post => {
+          if (post._id === response.id) {
+            post.comments = [...post.comments, response.newComment];
+            post.rating = [...post.rating, response.newRating];
+          }
+        });
+        this.setState({ imagePosts });
+      } catch (err) {
+        this.setState({ errors: err.response.data.errors });
+      }
+    }
+  };
+
+  onSort = (e, { value }) => {
+    let sortedPosts;
+
+    if (value) {
+      sortedPosts = this.state.imagePosts
+        .slice()
+        .sort((a, b) => sortAscending(a, b, "date"))
+        .reverse();
+    } else {
+      sortedPosts = this.state.imagePosts
+        .slice()
+        .sort((a, b) => sortAscending(a, b, "location"));
+    }
+    this.setState({ imagePosts: sortedPosts });
+  };
+
+  addInputState = imagePosts => {
+    if (imagePosts.length > 0) {
+      imagePosts.forEach(() => {
+        this.setState(prevState => ({
+          data: [...prevState.data, { comment: "", rating: 0 }]
+        }));
+      });
+    }
+  };
+
+  validate = comment => {
+    const errors = {};
+
+    if (!comment.trim()) {
+      errors.comment = "You cannot post an empty comment!";
     }
 
-    // first parameter is no use here, but the second one is required
-    onRate = (e, { rating }, index ) => {
-        let { data } = this.state;
-        data[index] = {...this.state.data[index], rating};
-        this.setState({ data });
-    }
-
-    onSubmit = async (data, id) => {
-        const errors = this.validate(data.comment);
-        this.setState({ errors: {...errors, id} });
-        
-        if (Object.keys(errors).length === 0) {
-            const username = sessionStorage.getItem("username");
-            const postComment = {...data, id, username};
-
-            try {
-                const response = await api.postComment(postComment);
-                const { imagePosts } = this.state;
-
-                imagePosts.forEach(post => {
-                    if (post._id === response.id) { 
-                        post.comments = [...post.comments, response.newComment];
-                        post.rating = [...post.rating, response.newRating];
-                    }
-                });
-                this.setState({ imagePosts });
-            }
-            catch (err) {
-                this.setState({ errors: err.response.data.errors })
-            }
-        }
-        
-    }
-
-    onSort = (e, { value }) => {
-        let sortedPosts;
-
-        if (value) {
-            sortedPosts = this.state.imagePosts.slice().sort((a, b) => sortAscending(a, b, "date")).reverse();
-        }
-        else {
-            sortedPosts = this.state.imagePosts.slice().sort((a, b) => sortAscending(a, b, "location"));
-        }
-        this.setState({ imagePosts: sortedPosts });
-    }
-
-    addInputState = imagePosts => {
-        if (imagePosts.length > 0) {
-            imagePosts.forEach(() => {
-                this.setState(prevState => ({ 
-                    data: [...prevState.data, {comment: '', rating: 0}]
-                }));
-            })
-        }
-    }
-
-    validate = comment => {
-        const errors = {}
-
-        if (!comment.trim()) {
-            errors.comment = "You cannot post an empty comment!"
-        }
-
-        return errors;
-    }
+    return errors;
+  };
 
     render() {
         const { data, imagePosts, errors, loading } = this.state;
