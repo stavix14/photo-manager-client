@@ -5,6 +5,7 @@ import CardDisplay from "../cards/CardDisplay";
 import ErrorPage from "../pages/ErrorPage";
 import api from "../api";
 import { sortAscending } from "../utils/utils";
+import "./FeedPage.css";
 
 class FeedPage extends React.Component {
     state = {
@@ -18,6 +19,7 @@ class FeedPage extends React.Component {
         try {
             this.setState({ loading: true});
             const response = await api.getImages();
+            response.imagePosts = response.images; // will change imagePosts with images everywhere
             this.setState({ imagePosts: response.imagePosts });
             this.addInputState(response.imagePosts);
             this.setState({ loading: false});
@@ -129,7 +131,8 @@ class FeedPage extends React.Component {
         }
         if (!imagePosts.length) {
             return (
-                <React.Fragment>
+                <div className="no-images-wrapper">
+                    <Header>No pictures for you! Upload one above and enjoy the new Instagram!</Header>
                     <Button 
                         primary
                         as={Link}
@@ -138,31 +141,32 @@ class FeedPage extends React.Component {
                         labelPosition="left"
                         icon="reply"
                     />
-                    <Header>No pictures for you! Upload one above and enjoy the new Instagram!</Header>
-                </React.Fragment>
+                </div>
             )
         }
         return(
-            <React.Fragment>
-                <Button 
-                    primary
-                    as={Link}
-                    to='/upload'
-                    content="Upload a picture"
-                    labelPosition="left"
-                    icon="reply"
-                    floated='right'
-                />
-                <Dropdown
-                    text='Filter Posts'
-                    icon='filter'
-                    floating
-                    labeled
-                    button
-                    options={sortOptions}
-                    onChange={this.onSort}
-                    className='icon'
-                />
+            <div className="feed-page-wrapper">
+                <div className="button-wrapper">
+                    <Button 
+                        primary
+                        as={Link}
+                        to='/upload'
+                        content="Upload a picture"
+                        labelPosition="left"
+                        icon="reply"
+                        floated='right'
+                    />
+                    <Dropdown
+                        text='Filter Posts'
+                        icon='filter'
+                        floating
+                        labeled
+                        button
+                        options={sortOptions}
+                        onChange={this.onSort}
+                        className='icon'
+                    />
+                </div>
                     {imagePosts.map((post, index) => {
                         return (<CardDisplay
                             key={post._id} 
@@ -175,7 +179,7 @@ class FeedPage extends React.Component {
                             onRate={(e, data) => this.onRate(e, data, index)}
                         />)}
                     )}
-            </React.Fragment>
+            </div>
         );
     };
 }

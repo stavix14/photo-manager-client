@@ -6,6 +6,7 @@ import Chip from '../miscellaneous/Chip';
 import ErrorPage from "./ErrorPage";
 import { validateDate, validateImage } from "../utils/validate";
 import api from "../api";
+import "./UploadPage.css"
 
 
 class UploadPage extends React.Component {
@@ -107,8 +108,9 @@ class UploadPage extends React.Component {
             return <ErrorPage />
         }
         return (
-            <React.Fragment>
+            <div className="upload-page-wrapper">
                 <Button
+                    className="go-to-feed"
                     primary
                     as={Link} 
                     to='/feed'
@@ -128,7 +130,7 @@ class UploadPage extends React.Component {
 
                 />
                 {data.tags.map((tag, index) => <Chip key={index} tag={tag} /> )}
-            </React.Fragment>
+            </div>
         );
     }
 };

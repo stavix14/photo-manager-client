@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Header, Icon } from 'semantic-ui-react';
+import "./ErrorPage.css";
 
 const ErrorPage = () => (
-    <React.Fragment>
-        <Header as='h2' icon>
+    <div className="error-page-wrapper">
+        <Header className="forbidden-access-header" as='h2' icon>
             <Icon name='settings' />
                 Access forbidden!
             <Header.Subheader>
@@ -19,7 +20,7 @@ const ErrorPage = () => (
             as={Link} 
             to="/"
         />
-    </React.Fragment>
+    </div>
 );
 
 export default ErrorPage;

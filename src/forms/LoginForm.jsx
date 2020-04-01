@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Form, Message } from 'semantic-ui-react';
+import "./forms.css";
 
 const LoginForm = ({ email, password, errors, loading, registrationSucceded, onChange }) => (
-        <Form loading={loading}>
+        <Form className="form-wrapper" loading={loading}>
             {errors.global && (
                 <Message 
                     negative

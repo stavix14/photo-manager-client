@@ -5,6 +5,7 @@ import Chip from "../miscellaneous/Chip";
 import CommentDisplay from "../comments/CommentDisplay";
 import CommentInput from "../comments/CommentInput";
 import { ratingCalculation } from "../utils/utils";
+import "./CardDisplay.css";
 
 const CardDisplay = ({ id, data, inputData, errors, onSubmit, onChange, onRate }) => (
   <Card centered>
@@ -30,10 +31,12 @@ const CardDisplay = ({ id, data, inputData, errors, onSubmit, onChange, onRate }
         {data.tags.map((tag, index) => <Chip key={index} tag={tag} /> )}
     </Card.Content>
     <Comment.Group>
+      <div className="comment-list-wrapper">
         <Header as='h3' dividing>
-            Comments
+          Comments
         </Header>
         {data.comments.map((commentPost, index) => <CommentDisplay key={index} username={commentPost[0]} comment={commentPost[1]} />)}
+      </div>
     <CommentInput
         id={id} 
         onChange={onChange} 

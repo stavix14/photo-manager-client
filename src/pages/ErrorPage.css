@@ -1,0 +1,8 @@
+.error-page-wrapper {
+    text-align: center;
+    margin-top: 2em;
+}
+
+.forbidden-access-header {
+    display: block !important;
+}

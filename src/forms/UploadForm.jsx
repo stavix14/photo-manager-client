@@ -71,6 +71,7 @@ const UploadForm = ({ formValues, errors, loading, submitSuccess, onChange, addT
                 required
             />
             <Button
+                className="button-submit"
                 type="submit"
                 positive
                 content="Submit"

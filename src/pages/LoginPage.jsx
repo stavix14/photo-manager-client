@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
 import LoginForm from "../forms/LoginForm";
 import api from "../api";
+import "./LoginPage.css";
 
 class LoginPage extends React.Component {
     state = {
@@ -58,7 +59,7 @@ class LoginPage extends React.Component {
         const path = ["auth", "register"];
 
         return (
-            <React.Fragment>
+            <div className="login-wrapper">
                 <LoginForm
                     email={data.email}
                     password={data.password}
@@ -67,14 +68,14 @@ class LoginPage extends React.Component {
                     registrationSucceded={registrationSucceded}
                     onChange={this.onChange}
                 />
-                <div style={{ textAlign: "center", marginTop: "2em"}}>
+                <div style={{ textAlign: "center", marginTop: "2em" }}>
                     <Button.Group>
                         <Button onClick={() => this.onSubmit(data, path[0])} color="instagram" labelPosition="left" content="Sign In" icon="sign in" />
                         <Button.Or />
                         <Button onClick={() => this.onSubmit(data, path[1])} positive labelPosition="right" content="Sign Up" icon="angle double up" />
                     </Button.Group>
                 </div>
-            </React.Fragment>
+            </div>
         );
     }
 }

@@ -1,10 +1,12 @@
 import React from 'react';
 import { Button, Form, Rating } from 'semantic-ui-react';
+import "./comments.css"
 
 const CommentInput = ({ id, onChange, onRate, onSubmit, inputData, errors}) => 
     <React.Fragment>
         <Form reply>
         <Form.TextArea
+            className="comment-input-wrapper"
             name="comment" 
             label="Comment" 
             placeholder="Insert your comment here..."
